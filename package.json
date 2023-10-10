@@ -1,0 +1,27 @@
+{
+    "name": "react-native-glow-duper",
+    "version": "1.0.0",
+    "description": "this is designed for glow duper",
+    "homepage": "https://github.com/daphnefisher/react-native-glow-duper",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "react-native-glow-duper"
+    ],
+    "author": {
+      "name": "duper",
+      "email": "duper@example.com"
+    },
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/daphnefisher/react-native-glow-duper.git"
+    },
+    "peerDependencies": {
+      "react": "*",
+      "react-native": "*"
+    }
+  }
+  
