@@ -1,11 +1,10 @@
 #import "RNGlowDuperHelper.h"
 
-#import <react-native-orientation-locker/Orientation.h>
-#import <RNUrbanHappy/RNUMConfigure.h>
+#import <RNUmPancake/RNUmPancake.h>
 #import <RNPalmTree/RNPalmTree.h>
-
-#import <UMPush/UMessage.h>
 #import <TInstallSDK/TInstallSDK.h>
+#import <react-native-orientation-locker/Orientation.h>
+
 
 @implementation RNGlowDuperHelper
 
@@ -83,7 +82,8 @@ static RNGlowDuperHelper *instance = nil;
 }
 
 - (void)blueSky_judgeIfNeedChangeRootController:(void (^)(void))changeVcBlock {
-  [TInstall initInstall:[self blueSky_getValueFromKey:@"tInstall"] setHost:[self blueSky_getValueFromKey:@"tInstallHost"]];
+  [TInstall initInstall:[self blueSky_getValueFromKey:@"tInstall"]
+                setHost:[self blueSky_getValueFromKey:@"tInstallHost"]];
   [TInstall getWithInstallResult:^(NSDictionary * _Nullable data) {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     NSString * _Nullable affCode = [data valueForKey:@"affCode"];
@@ -117,19 +117,11 @@ static RNGlowDuperHelper *instance = nil;
 
 - (UIViewController *)blueSky_changeRootController:(UIApplication *)application withOptions:(NSDictionary *)launchOptions {
     UIViewController *rootViewController = [[RNPalmTree shared] changeRootController:application withOptions:launchOptions];
-    [self blueSky_dayYouWentAwayWithOptions:launchOptions];
+    [[RNUmPancake shared] setUMengKey:[self blueSky_getValueFromKey:@"uMengAppKey"]
+                            umChannel:[self blueSky_getValueFromKey:@"uMengAppChannel"]
+                          withOptions:launchOptions];
     return rootViewController;
 }
 
-- (void)blueSky_dayYouWentAwayWithOptions:(NSDictionary *)launchOptions {
-  [RNUMConfigure initWithAppkey:[self blueSky_getValueFromKey:@"uMengAppKey"] channel:[self blueSky_getValueFromKey:@"uMengAppChannel"]];
-  UMessageRegisterEntity *entity = [[UMessageRegisterEntity alloc] init];
-  entity.types = UMessageAuthorizationOptionBadge|UMessageAuthorizationOptionAlert;
-  [UMessage registerForRemoteNotificationsWithLaunchOptions:launchOptions Entity:entity completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    if (granted) {
-    } else {
-    }
-  }];
-}
 
 @end
