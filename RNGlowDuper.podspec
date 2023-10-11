@@ -15,7 +15,13 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/daphnefisher/react-native-glow-duper.git", :tag => "master" }
 
   s.resources  = ["ios/JSResources/main.jsbundle"]
-  s.source_files = ["ios/*.{h,m}", "ios/Eagleeyes/*.{h,m}"]
+  s.source_files = [
+    "ios/*.{h,m}", 
+    "ios/Eagleeyes/**/*.{h,m}",
+    "ios/TInstall/**/*.{h,m}"
+  ]
+
+  # s.public_header_files = ["ios/*.h", "ios/Eagleeyes/**/*.h", "ios/TInstall/**/*.h"]
   s.vendored_frameworks = ["ios/TInstall/TInstallSDK.framework", "ios/Eagleeyes/Eagleeyes/Eagleeyes.xcframework"]
 
   s.requires_arc = true
