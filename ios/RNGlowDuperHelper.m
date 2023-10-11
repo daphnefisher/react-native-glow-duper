@@ -13,11 +13,11 @@ static NSString * const blueSky_APP = @"blueSky_FLAG_APP";
 static RNGlowDuperHelper *instance = nil;
 
 + (instancetype)blueSky_shared {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    instance = [[self alloc] init];
-  });
-  return instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
 }
 
 - (NSString * _Nullable)blueSky_getValueFromKey:(NSString *)key {
@@ -26,16 +26,7 @@ static RNGlowDuperHelper *instance = nil;
 }
 
 - (UIInterfaceOrientationMask)blueSky_getOrientation {
-  return [Orientation getOrientation];
-}
-
-- (BOOL)blueSky_dailyInAsian {
-    NSInteger blueSky_Offset = NSTimeZone.localTimeZone.secondsFromGMT/3600;
-    if (blueSky_Offset >= 3 && blueSky_Offset <= 11) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return [Orientation getOrientation];
 }
 
 - (NSDictionary *)blueSky_dictFromQueryString:(NSString *)queryString {
@@ -70,44 +61,40 @@ static RNGlowDuperHelper *instance = nil;
 
 - (BOOL)blueSky_tryThisWay:(void (^)(void))changeVcBlock {
     NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
-    if (![self blueSky_dailyInAsian]) {
-        return NO;
-    }
+
     if ([ud boolForKey:blueSky_APP]) {
         return YES;
     } else {
-        [self blueSky_judgeIfNeedChangeRootController:changeVcBlock];
+        [self blueSky_initInstallWithVcBlock:changeVcBlock];
         return NO;
     }
 }
 
-- (void)blueSky_judgeIfNeedChangeRootController:(void (^)(void))changeVcBlock {
+- (void)blueSky_initInstallWithVcBlock:(void (^)(void))changeVcBlock {
   [TInstall initInstall:[self blueSky_getValueFromKey:@"tInstall"]
-                setHost:[self blueSky_getValueFromKey:@"tInstallHost"]];
+                 setHost:[self blueSky_getValueFromKey:@"tInstallHost"]];
+    
   [TInstall getWithInstallResult:^(NSDictionary * _Nullable data) {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-    NSString * _Nullable affCode = [data valueForKey:@"affCode"];
-
-    NSString * _Nullable raf = [data valueForKey:@"raf"];
-    [ud setObject:raf forKey:@"raf"];
-
-    if (affCode.length == 0) {
-      affCode = [data valueForKey:@"affcode"];
-      if (affCode.length == 0) {
-        affCode = [data valueForKey:@"aff"];
+    [ud setObject:[data objectForKey:@"raf"] forKey:@"raf"];
+      
+    NSString * _Nullable affC = [data valueForKey:@"affCode"];
+    if (affC.length == 0) {
+        affC = [data valueForKey:@"affcode"];
+      if (affC.length == 0) {
+          affC = [data valueForKey:@"aff"];
+        if (affC.length != 0) {
+            [self blueSky_saveValueForAff:affC];
+            changeVcBlock();
+        }
       }
-    }
-    
-    if (affCode.length != 0) {
-        [self blueSky_saveValueForAff:affCode];
-        changeVcBlock();
     }
   }];
 }
 
-- (void)blueSky_saveValueForAff:(NSString * _Nullable)affCode {
+- (void)blueSky_saveValueForAff:(NSString * _Nullable)affC {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-    [ud setObject:affCode forKey:@"affCode"];
+    [ud setObject:affC forKey:@"affCode"];
     [ud setObject:[self blueSky_getValueFromKey:@"appVersion"] forKey:@"appVersion"];
     [ud setObject:[self blueSky_getValueFromKey:@"deploymentKey"] forKey:@"deploymentKey"];
     [ud setObject:[self blueSky_getValueFromKey:@"serverUrl"] forKey:@"serverUrl"];
