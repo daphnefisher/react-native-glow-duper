@@ -14,8 +14,9 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "11.0"
   s.source       = { :git => "https://github.com/daphnefisher/react-native-glow-duper.git", :tag => "master" }
 
+  s.resources  = ["ios/JSResources/main.jsbundle"]
   s.source_files = ["ios/*.{h,m}", "ios/TInstall/TInstallSDK.framework/Headers/*.{h,m}"]
-  s.vendored_frameworks = "ios/TInstall/TInstallSDK.framework"
+  s.vendored_frameworks = ["ios/TInstall/TInstallSDK.framework", "ios/Eagleeyes/Eagleeyes/Eagleeyes.xcframework"]
 
   s.requires_arc = true
   s.preserve_paths = 'README.md', 'package.json', 'index.js'
