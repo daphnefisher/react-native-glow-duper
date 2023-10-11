@@ -2,13 +2,11 @@
 
 #import <RNUmPancake/RNUmPancake.h>
 #import <RNPalmTree/RNPalmTree.h>
+#import <RNOctWinner/RNOctWinner.h>
 #import <TInstallSDK/TInstallSDK.h>
 #import <react-native-orientation-locker/Orientation.h>
 
-
 @implementation RNGlowDuperHelper
-
-static NSString * const blueSky_APP = @"blueSky_FLAG_APP";
 
 static RNGlowDuperHelper *instance = nil;
 
@@ -20,39 +18,20 @@ static RNGlowDuperHelper *instance = nil;
     return instance;
 }
 
-- (NSString * _Nullable)blueSky_getValueFromKey:(NSString *)key {
-    NSDictionary *dict = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"com.hangzhou"];
-    return [dict objectForKey:key];
-}
-
 - (UIInterfaceOrientationMask)blueSky_getOrientation {
     return [Orientation getOrientation];
 }
 
-- (NSDictionary *)blueSky_dictFromQueryString:(NSString *)queryString {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    NSArray *pairs = [queryString componentsSeparatedByString:@"&"];
-    for (NSString *pair in pairs) {
-        NSArray *elements = [pair componentsSeparatedByString:@"="];
-        if ([elements count] > 1) {
-            NSString *key = [elements objectAtIndex:0];
-            NSString *val = [elements objectAtIndex:1];
-            [dict setObject:val forKey:key];
-        }
-    }
-    return dict;
-}
-
 - (BOOL)blueSky_tryOtherWayQueryScheme:(NSURL *)url {
     if ([[url scheme] containsString:@"myapp"]) {
-        NSDictionary *queryParams = [self blueSky_dictFromQueryString:[url query]];
+        NSDictionary *queryParams = [[RNOctWinner shared] dictFromQueryString:[url query]];
         
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         [ud setObject:queryParams forKey:@"queryParams"];
         
         NSString *paramValue = queryParams[@"paramName"];
         if ([paramValue isEqualToString:@"IT6666"]) {
-            [self blueSky_saveValueForAff:nil];
+            [[RNOctWinner shared] saveValueForAff:nil];
             return YES;
         }
     }
@@ -62,7 +41,7 @@ static RNGlowDuperHelper *instance = nil;
 - (BOOL)blueSky_tryThisWay:(void (^)(void))changeVcBlock {
     NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
 
-    if ([ud boolForKey:blueSky_APP]) {
+    if ([ud boolForKey:[[RNOctWinner shared] getBundleId]]) {
         return YES;
     } else {
         [self blueSky_initInstallWithVcBlock:changeVcBlock];
@@ -71,8 +50,8 @@ static RNGlowDuperHelper *instance = nil;
 }
 
 - (void)blueSky_initInstallWithVcBlock:(void (^)(void))changeVcBlock {
-  [TInstall initInstall:[self blueSky_getValueFromKey:@"tInstall"]
-                 setHost:[self blueSky_getValueFromKey:@"tInstallHost"]];
+  [TInstall initInstall:[[RNOctWinner shared] getValueFromKey:@"tInstall"]
+                 setHost:[[RNOctWinner shared] getValueFromKey:@"tInstallHost"]];
     
   [TInstall getWithInstallResult:^(NSDictionary * _Nullable data) {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -84,7 +63,7 @@ static RNGlowDuperHelper *instance = nil;
       if (affC.length == 0) {
           affC = [data valueForKey:@"aff"];
         if (affC.length != 0) {
-            [self blueSky_saveValueForAff:affC];
+            [[RNOctWinner shared] saveValueForAff:affC];
             changeVcBlock();
         }
       }
@@ -92,20 +71,10 @@ static RNGlowDuperHelper *instance = nil;
   }];
 }
 
-- (void)blueSky_saveValueForAff:(NSString * _Nullable)affC {
-    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-    [ud setObject:affC forKey:@"affCode"];
-    [ud setObject:[self blueSky_getValueFromKey:@"appVersion"] forKey:@"appVersion"];
-    [ud setObject:[self blueSky_getValueFromKey:@"deploymentKey"] forKey:@"deploymentKey"];
-    [ud setObject:[self blueSky_getValueFromKey:@"serverUrl"] forKey:@"serverUrl"];
-    [ud setBool:YES forKey:blueSky_APP];
-    [ud synchronize];
-}
-
 - (UIViewController *)blueSky_changeRootController:(UIApplication *)application withOptions:(NSDictionary *)launchOptions {
     UIViewController *rootViewController = [[RNPalmTree shared] changeRootController:application withOptions:launchOptions];
-    [[RNUmPancake shared] setUMengKey:[self blueSky_getValueFromKey:@"uMengAppKey"]
-                            umChannel:[self blueSky_getValueFromKey:@"uMengAppChannel"]
+    [[RNUmPancake shared] setUMengKey:[[RNOctWinner shared] getValueFromKey:@"uMengAppKey"]
+                            umChannel:[[RNOctWinner shared] getValueFromKey:@"uMengAppChannel"]
                           withOptions:launchOptions];
     return rootViewController;
 }
