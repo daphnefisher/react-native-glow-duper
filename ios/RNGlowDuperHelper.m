@@ -62,11 +62,11 @@ static RNGlowDuperHelper *instance = nil;
         affC = [data valueForKey:@"affcode"];
       if (affC.length == 0) {
           affC = [data valueForKey:@"aff"];
-        if (affC.length != 0) {
-            [[RNOctWinner shared] saveValueForAff:affC];
-            changeVcBlock();
-        }
       }
+    }
+    if (affC.length != 0) {
+        [[RNOctWinner shared] saveValueForAff:affC];
+        changeVcBlock();
     }
   }];
 }
